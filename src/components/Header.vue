@@ -1,5 +1,5 @@
 <template>
-  <c-box border-bottom="2px" bg="yellow" border-color="tomato" box-shadow="lg">
+  <c-box border-bottom="2px" mb="4" border-color="tomato" box-shadow="lg">
     <c-flex p="4"> Header </c-flex>
   </c-box>
 </template>

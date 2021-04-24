@@ -1,5 +1,8 @@
 <template>
-  <Header />
+  <CBox>
+    <Header />
+    <CHeading align="center">TODO</CHeading>
+  </CBox>
 </template>
 
 <script lang="js">
