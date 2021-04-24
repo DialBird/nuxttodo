@@ -44,8 +44,17 @@ export default defineComponent({
     const { $supabase } = useContext()
 
     const { fetch } = useFetch(async () => {
-      const res = await $supabase.from('todos').select('id, title').order('id')
-      todos.value = res.body
+      const { data, error } = await $supabase
+        .from('todos')
+        .select('*')
+        .order('id')
+
+      if (error) {
+        alert(error)
+        return
+      }
+
+      todos.value = data
     })
 
     fetch()
