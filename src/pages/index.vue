@@ -12,6 +12,8 @@
         />
       </ul>
     </template>
+    <input type="text" v-model="newTitle" />
+    <button @click="addTodo" :disabled="!newTitle">Add</button>
   </CBox>
 </template>
 
@@ -36,14 +38,10 @@ export default defineComponent({
   },
   setup() {
     const todos = ref([])
+    const newTitle = ref('')
+
     // @ts-ignore
     const { $supabase } = useContext()
-
-    const sleep = (millisec: number) => {
-      return new Promise((resolve) => {
-        setTimeout(resolve, millisec)
-      })
-    }
 
     const { fetch } = useFetch(async () => {
       const res = await $supabase.from('todos').select('id, title').order('id')
@@ -52,7 +50,20 @@ export default defineComponent({
 
     fetch()
 
-    return { todos }
+    const addTodo = async () => {
+      const { error } = await $supabase
+        .from('todos')
+        .insert([{ title: newTitle.value }])
+
+      if (error) {
+        alert(error.message)
+        return
+      }
+      fetch()
+      newTitle.value = ''
+    }
+
+    return { addTodo, newTitle, todos }
   },
 })
 </script>
