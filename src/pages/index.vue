@@ -2,18 +2,26 @@
   <CBox>
     <Header />
     <CHeading align="center">TODO</CHeading>
-    <ul>
-      <TodoItem v-for="todo in todos" :key="todo.id" :todo="todo" />
-    </ul>
+    <template v-if="!$fetchState.pending">
+      <ul>
+        <TodoItem v-for="todo in todos" :key="todo.id" :todo="todo" />
+      </ul>
+    </template>
   </CBox>
 </template>
 
-<script lang="js">
+<script lang="ts">
+import {
+  defineComponent,
+  ref,
+  useContext,
+  useFetch,
+} from '@nuxtjs/composition-api'
 import { CBox, CHeading } from '@chakra-ui/vue'
-import Header from '@/components/Header'
-import TodoItem from '@/components/TodoItem'
+import Header from '@/components/Header.vue'
+import TodoItem from '@/components/TodoItem.vue'
 
-export default {
+export default defineComponent({
   name: 'App',
   components: {
     CBox,
@@ -21,49 +29,25 @@ export default {
     Header,
     TodoItem,
   },
-  inject: ['$chakraColorMode', '$toggleColorMode'],
-  data () {
-    return {
-      showModal: false,
-      mainStyles: {
-        dark: {
-          bg: 'gray.700',
-          color: 'whiteAlpha.900'
-        },
-        light: {
-          bg: 'white',
-          color: 'gray.900'
-        }
-      },
-      todos: []
-    }
-  },
-  mounted() {
-    this.$supabase.from('todos').select('id, title').order('id').then(res => {
-      this.todos = res.body
-    })
-  },
-  computed: {
-    colorMode () {
-      return this.$chakraColorMode()
-    },
-    theme () {
-      return this.$chakraTheme()
-    },
-    toggleColorMode () {
-      return this.$toggleColorMode
-    }
-  },
-  methods: {
-    showToast () {
-      this.$toast({
-        title: 'Account created.',
-        description: "We've created your account for you.",
-        status: 'success',
-        duration: 10000,
-        isClosable: true
+  setup() {
+    const todos = ref([])
+    // @ts-ignore
+    const { $supabase } = useContext()
+
+    const sleep = (millisec: number) => {
+      return new Promise((resolve) => {
+        setTimeout(resolve, millisec)
       })
     }
-  }
-}
+
+    const { fetch, fetchState } = useFetch(async () => {
+      const res = await $supabase.from('todos').select('id, title').order('id')
+      todos.value = res.body
+    })
+
+    fetch()
+
+    return { todos }
+  },
+})
 </script>

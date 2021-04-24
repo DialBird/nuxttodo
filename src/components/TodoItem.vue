@@ -29,6 +29,7 @@ export default defineComponent({
   },
   setup(props, ctx) {
     const { todo } = toRefs(props)
+    // @ts-ignore
     const { $supabase } = useContext()
 
     const isEditing = ref(false)
