@@ -2,48 +2,24 @@
   <CBox>
     <Header />
     <CHeading align="center">TODO</CHeading>
+    <ul>
+      <TodoItem v-for="todo in todos" :key="todo.id" :todo="todo" />
+    </ul>
   </CBox>
 </template>
 
 <script lang="js">
-import {
-  CBox,
-  CButton,
-  CAvatarGroup,
-  CAvatar,
-  CAvatarBadge,
-  CModal,
-  CModalContent,
-  CModalOverlay,
-  CModalHeader,
-  CModalFooter,
-  CModalBody,
-  CModalCloseButton,
-  CIconButton,
-  CFlex,
-  CHeading
-} from '@chakra-ui/vue'
+import { CBox, CHeading } from '@chakra-ui/vue'
 import Header from '@/components/Header'
+import TodoItem from '@/components/TodoItem'
 
 export default {
   name: 'App',
   components: {
     CBox,
-    CButton,
-    CAvatarGroup,
-    CAvatar,
-    CAvatarBadge,
-    CModal,
-    CModalContent,
-    CModalOverlay,
-    CModalHeader,
-    CModalFooter,
-    CModalBody,
-    CModalCloseButton,
-    CIconButton,
-    CFlex,
     CHeading,
     Header,
+    TodoItem,
   },
   inject: ['$chakraColorMode', '$toggleColorMode'],
   data () {
@@ -58,8 +34,14 @@ export default {
           bg: 'white',
           color: 'gray.900'
         }
-      }
+      },
+      todos: []
     }
+  },
+  mounted() {
+    this.$supabase.from('todos').select('id, title').order('id').then(res => {
+      this.todos = res.body
+    })
   },
   computed: {
     colorMode () {
