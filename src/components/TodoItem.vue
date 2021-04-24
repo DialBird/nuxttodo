@@ -7,6 +7,7 @@
     <template v-else>
       {{ title }}
       <button @click="handleEdit">edit</button>
+      <button @click="handleDelete">delete</button>
     </template>
   </li>
 </template>
@@ -48,15 +49,19 @@ export default defineComponent({
 
       if (error) {
         alert(error.message)
-        console.error('There was an error updating', error)
         return
       }
 
-      console.log('Updated task', todo.value.id, title.value)
       isEditing.value = false
     }
 
+    const handleDelete = async () => {
+      await $supabase.from('todos').delete().eq('id', todo.value.id).single()
+      ctx.emit('fetchTodos')
+    }
+
     return {
+      handleDelete,
       handleEdit,
       handleUpdate,
       isEditing,

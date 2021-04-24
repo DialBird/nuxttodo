@@ -4,7 +4,12 @@
     <CHeading align="center">TODO</CHeading>
     <template v-if="!$fetchState.pending">
       <ul>
-        <TodoItem v-for="todo in todos" :key="todo.id" :todo="todo" />
+        <TodoItem
+          v-for="todo in todos"
+          :key="todo.id"
+          :todo="todo"
+          @fetchTodos="$fetch"
+        />
       </ul>
     </template>
   </CBox>
@@ -40,7 +45,7 @@ export default defineComponent({
       })
     }
 
-    const { fetch, fetchState } = useFetch(async () => {
+    const { fetch } = useFetch(async () => {
       const res = await $supabase.from('todos').select('id, title').order('id')
       todos.value = res.body
     })
